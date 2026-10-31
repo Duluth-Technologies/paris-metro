@@ -1,0 +1,7 @@
+[out:json][timeout:90];
+area["ISO3166-2"="FR-IDF"]["boundary"="administrative"]->.region;
+(node["railway"="subway_entrance"](area.region);node["railway"="train_station_entrance"](area.region);)->.entrances;
+rel(bn.entrances)["public_transport"="stop_area"]->.stops;
+.stops > ->.members;
+(rel(bn.members)["type"="route"]["route"~"^(subway|train|tram|light_rail)$"];rel(bw.members)["type"="route"]["route"~"^(subway|train|tram|light_rail)$"];rel(br.members)["type"="route"]["route"~"^(subway|train|tram|light_rail)$"];)->.routes;
+(.entrances;.stops;.routes;);out body;

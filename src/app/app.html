@@ -1,0 +1,52 @@
+<main aria-label="Map of Paris">
+  <div #map class="map" aria-label="Interactive OpenStreetMap centered on Paris"></div>
+
+  <fieldset class="transit-controls">
+    <legend>Transit lines</legend>
+    @for (mode of modes; track mode.id) {
+      <label class="transit-option">
+        <input
+          type="checkbox"
+          [checked]="mode.enabled()"
+          (change)="toggleMode(mode.id, $event.target.checked)"
+          [attr.aria-describedby]="mode.loading() || mode.error() ? mode.id + '-status' : null"
+        />
+        <span>{{ mode.label }}</span>
+      </label>
+      <div [id]="mode.id + '-status'" class="status" aria-live="polite">
+        @if (mode.loading()) {
+          Loading {{ mode.label }} lines and stops…
+        } @else if (mode.error()) {
+          Could not load {{ mode.label }} lines or stops. Check the box to retry.
+        }
+      </div>
+    }
+    <label class="transit-option walking-control">
+      <input
+        type="checkbox"
+        role="switch"
+        [checked]="walkingEnabled()"
+        (change)="toggleWalking($event.target.checked)"
+      />
+      <span>Walking streets (5/10 min)</span>
+    </label>
+    @if (walkingVisible()) {
+      <div class="walking-legend" aria-label="Walking time along streets">
+        <span><i class="walking-five" aria-hidden="true"></i>0–5 min walk</span>
+        <span><i class="walking-ten" aria-hidden="true"></i>5–10 min walk</span>
+      </div>
+      <p class="map-hint">
+        {{ walkingSpeed() }} km/h · Includes estimated access to future stations.
+      </p>
+      @if (walkingError()) {
+        <p class="status" role="status">
+          Some walking highlights could not load. Toggle the network to retry.
+        </p>
+      }
+    }
+    <p class="map-hint">Dashed routes and their station dots are under construction.</p>
+    <p class="map-hint">
+      Nearby entrances of the same station share a dot. Zoom in to separate them.
+    </p>
+  </fieldset>
+</main>
